@@ -315,9 +315,9 @@ void UnitSprite::drawRoutine0()
 			{
 				femaleTorso = 286; // aquanaut underwater magnetic ion armour torso
 			}
-			rarm1H = 248;
+			rarm1H = rarmShoot = 248;
 			larm2H = 232;
-			rarm2H = rarmShoot = 240;
+			rarm2H = 240;
 			legsFloat = 294;
 		}
 		else
@@ -326,9 +326,9 @@ void UnitSprite::drawRoutine0()
 			// aquanaut land torso
 			maleTorso = 270;
 			femaleTorso = 262;
-			rarm1H = 248;
+			rarm1H = rarmShoot = 248;
 			larm2H = 232;
-			rarm2H = rarmShoot = 240;
+			rarm2H = 240;
 			legsFloat = 294;
 		}
 	}
@@ -338,9 +338,9 @@ void UnitSprite::drawRoutine0()
 		// tftd unit torso
 		maleTorso = 32;
 		femaleTorso = 262;
-		rarm1H = 248;
+		rarm1H = rarmShoot = 248;
 		larm2H = 232;
-		rarm2H = rarmShoot = 240;
+		rarm2H = 240;
 		legsFloat = 294;
 	}
 	const int larmStand = 0, rarmStand = 8;
@@ -364,6 +364,8 @@ void UnitSprite::drawRoutine0()
 	const int offY6[8] = { -4, -4, -1, 0, 5, 0, 1, 0 }; // for the left handed rifles
 	const int offX7[8] = { 0, 6, 8, 12, 2, -5, -5, -13 }; // for the left handed rifles (muton)
 	const int offY7[8] = { -4, -6, -1, 0, 3, 0, 1, 0 }; // for the left handed rifles (muton)
+	const int offX8[8] = { 6, 8, 5, 2, -7, -9, -5, -1 }; // for the weapons (TFTD units)
+	const int offY8[8] = { -1, 0, 0, 2, 0, 0, -1, -2 }; // for the weapons (TFTD units)
 	const int offYKneel = 4;
 	const int offXAiming = 0;
 	const int soldierHeight = 22;
@@ -451,8 +453,16 @@ void UnitSprite::drawRoutine0()
 		{
 			int dir = (unitDir + 2)%8;
 			selectItem(itemR, _itemR, dir);
-			itemR.offX = (offX[unitDir]);
-			itemR.offY = (offY[unitDir]);
+			if (_drawingRoutine >= 13) // apply different weapon offsets for TFTD units
+			{
+				itemR.offX = (offX8[unitDir]);
+				itemR.offY = (offY8[unitDir]);
+			}
+			else
+			{
+				itemR.offX = (offX[unitDir]);
+				itemR.offY = (offY[unitDir]);
+			}
 		}
 		else
 		{
@@ -483,6 +493,10 @@ void UnitSprite::drawRoutine0()
 			selectUnit(leftArm, larm2H, unitDir);
 			if (_unit->getStatus() == STATUS_AIMING)
 			{
+				if (_drawingRoutine >= 13) // TFTD unit's lefArm uses larmStand sprite when shooting 
+				{
+					selectUnit(leftArm, larmStand, unitDir);
+				}
 				selectUnit(rightArm, rarmShoot, unitDir);
 			}
 			else
